@@ -100,7 +100,9 @@ for WEBSITE in $(cat ${SOURCE_FILE})
 # If this is a dry run, echo instead of sending
 do
   echo_out "${WEBSITE}"
-  CURL_COMMAND="curl -fsSL ${WEBSITE} --output ${DESTINATION}"
+  FILE=$(echo "${WEBSITE}" | awk -F"//" '{print $NF}' | sed "s/\//./g")
+  DESTINATION_FILE="${DESTINATION}/${FILE}"
+  CURL_COMMAND="curl -fsSL ${WEBSITE} --output ${DESTINATION_FILE}"
   # print command if this is a dry run
   if [[ "${DRY_RUN}" = 'true' ]]; then
     echo "DRY RUN: ${CURL_COMMAND}"
