@@ -14,8 +14,14 @@ VERBOSE='false'
 
 # Functions
 check_curl() {
-sudo apt update
-sudo apt-get -y install curl
+TEST=$(dpkg -l | grep -w "curl" | awk '{print $2}')
+if [[ "${TEST}" == "curl" ]];then
+  echo_out "cURL installed."
+else
+  echo_out "Installing cURL."
+  sudo apt update
+  sudo apt-get -y install curl
+fi
 }
 
 check_root(){
