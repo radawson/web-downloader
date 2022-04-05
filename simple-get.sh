@@ -2,7 +2,7 @@
 # Collects web pages from a list of URLs
 # Runs as the current user
 # (c) 2022 Richard Dawson
-# v1.0.0
+# v1.0.2
 
 # Global Variables
 let COUNT=0
@@ -42,13 +42,14 @@ echo_out() {
 }
 
 usage() {
-  echo "Usage: ${0} [-nv] [-d DESTINATION] [-f SOURCE_FILE] COMMAND" >&2
+  echo "Usage: ${0} [-hnv] [-d DESTINATION] [-f SOURCE_FILE] COMMAND" >&2
   echo "Downloads contents of a URL from a list of URLs."
-  echo "-d DESTINATION 	Set DESTINATION directory."
-  echo "-f SOURCE_FILE 	Use FILE for the list of URLs. Default: ./listofurls.txt."
+  echo "-d DESTINATION 	Set DESTINATION directory. Default: ${HOME}/Documents/web-downloader"
+  echo "-f SOURCE_FILE 	Set FILE for the list of URLs. Default: ./listofurls.txt."
+  echo "-h 			Help and command syntax."
   echo "-n			Dry run mode. Display the URLs that would have been downloaded and exit."
-  echo "-t TIMEOUT	Set individual connection TIMEOUT."
-  echo "-v 			Verbose mode. Displays the server name before executing COMMAND."
+  echo "-t TIMEOUT	Set individual connection TIMEOUT. Default: 3.0."
+  echo "-v 			Verbose mode. Displays the additional information about each step."
   exit 1
 }
 ## MAIN ##
@@ -59,7 +60,7 @@ check_root
 check_curl
 
 # Provide usage statement if no parameters
-while getopts d:f:nv OPTION; do
+while getopts d:f:hnv OPTION; do
   case ${OPTION} in
     d)
 	# Change DESTINATION
@@ -71,6 +72,10 @@ while getopts d:f:nv OPTION; do
       SOURCE_FILE="${OPTARG}"
       echo_out "Server file is ${FILE}"
       ;;
+	h)
+	# Display help (usage) information
+	  usage
+	  ;;
     n)
 	# Execute a dry run instead of downloading
       DRY_RUN='true'
@@ -113,7 +118,7 @@ else
 fi
 
 # Confidence message when not using verbose
-printf "\nWorking\n"
+printf "\nWorking\n\n\t+ succes\n! error\n"
 
 # Loop through websites in URL list file
 for WEBSITE in $(cat ${SOURCE_FILE})
@@ -122,7 +127,7 @@ do
   echo_out "${WEBSITE}"
   FILE=$(echo "${WEBSITE}" | awk -F"//" '{print $NF}' | sed "s/\//./g")
   DESTINATION_FILE="${DESTINATION}/${FILE}"
-  CURL_COMMAND="curl -fsSL --connect-timeout ${TIMEOUT} ${WEBSITE} --output ${DESTINATION_FILE}"
+  CURL_COMMAND="curl -fsSL --connect-timeout ${TIMEOUT} ${WEBSITE} -o ${DESTINATION_FILE}"
   # print command if this is a dry run
   if [[ "${DRY_RUN}" = 'true' ]]; then
     echo "DRY RUN: ${CURL_COMMAND}"
@@ -133,6 +138,7 @@ do
     if [[ "${CURL_EXIT_STATUS}" -ne 0 ]]; then
       EXIT_STATUS="${CURL_EXIT_STATUS}"
 	  let COUNT=$COUNT+1
+	  #TODO: Clean up the bar when in verbose mode
       echo_out "Execution failed on ${WEBSITE}"
 	  printf "!"
     fi
