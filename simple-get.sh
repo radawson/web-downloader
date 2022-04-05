@@ -107,7 +107,12 @@ fi
 if [[ ! -e "${SOURCE_FILE}" ]]; then
   echo "URL file ${SOURCE_FILE} does not exist" >&2
   exit 1
+else
+  echo_out "URL file ${SOURCE_FILE} found."
 fi
+
+# Confidence message when not using verbose
+printf "\nWorking\n"
 
 # Loop through websites in URL list file
 for WEBSITE in $(cat ${SOURCE_FILE})
@@ -129,6 +134,7 @@ do
 	  let COUNT=$COUNT+1
       echo "Execution failed on ${WEBSITE}"
     fi
+	printf "."
   fi
 done
 
