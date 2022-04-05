@@ -120,7 +120,7 @@ else
 fi
 
 # Confidence message when not using verbose
-printf "\nWorking\n\n\t+ succes\n! error\n"
+printf "\nWorking\n\n+ success\t! error\n"
 
 # Loop through websites in URL list file
 for WEBSITE in $(cat ${SOURCE_FILE})
