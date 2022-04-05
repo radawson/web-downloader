@@ -9,6 +9,7 @@ DESTINATION="${HOME}/Documents/web-downloader"
 DRY_RUN='false'
 EXIT_STATUS='0'
 SOURCE_FILE='./listofurls.txt'
+TIMEOUT='3.0'
 VERBOSE='false'
 
 # Functions
@@ -35,10 +36,12 @@ echo_out() {
 
 usage() {
   echo "Usage: ${0} [-nv] [-d DESTINATION] [-f SOURCE_FILE] COMMAND" >&2
-  echo "Downloads ."
-  echo "-f SOURCE_FILE Use FILE for the list of URLs. Default: ./listofurls.txt."
-  echo "-n		Dry run mode. Display the URLs that would have been downloaded and exit."
-  echo "-v 		Verbose mode. Displays the server name before executing COMMAND."
+  echo "Downloads contents of a URL from a list of URLs."
+  echo "-d DESTINATION 	Set DESTINATION directory."
+  echo "-f SOURCE_FILE 	Use FILE for the list of URLs. Default: ./listofurls.txt."
+  echo "-n			Dry run mode. Display the URLs that would have been downloaded and exit."
+  echo "-t TIMEOUT	Set individual connection TIMEOUT."
+  echo "-v 			Verbose mode. Displays the server name before executing COMMAND."
   exit 1
 }
 ## MAIN ##
@@ -66,6 +69,11 @@ while getopts d:f:nv OPTION; do
       DRY_RUN='true'
       echo_out "Commands will be listed but not executed (Dry Run)"
       ;;
+	t)
+	# Set connection timeout
+	  TIMEOUT="${OPTARG}"
+	  echo_out "Connection timeout set to ${OPTARG}"
+	  ;;
 	v)
     # Echo commands to console
       VERBOSE='true'
@@ -102,7 +110,7 @@ do
   echo_out "${WEBSITE}"
   FILE=$(echo "${WEBSITE}" | awk -F"//" '{print $NF}' | sed "s/\//./g")
   DESTINATION_FILE="${DESTINATION}/${FILE}"
-  CURL_COMMAND="curl -fsSL ${WEBSITE} --output ${DESTINATION_FILE}"
+  CURL_COMMAND="curl -fsSL --connect-timeout ${TIMEOUT} ${WEBSITE} --output ${DESTINATION_FILE}"
   # print command if this is a dry run
   if [[ "${DRY_RUN}" = 'true' ]]; then
     echo "DRY RUN: ${CURL_COMMAND}"
