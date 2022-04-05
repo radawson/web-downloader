@@ -126,19 +126,21 @@ do
   if [[ "${DRY_RUN}" = 'true' ]]; then
     echo "DRY RUN: ${CURL_COMMAND}"
   else
-    ${CURL_COMMAND}
+    ${CURL_COMMAND} 2>> "${DESTINATION}"/errors.log
     CURL_EXIT_STATUS="${?}"
     # Get any non-zero exit status
     if [[ "${CURL_EXIT_STATUS}" -ne 0 ]]; then
       EXIT_STATUS="${CURL_EXIT_STATUS}"
 	  let COUNT=$COUNT+1
-      echo "Execution failed on ${WEBSITE}"
+      echo_out "Execution failed on ${WEBSITE}"
+	  printf "!"
     fi
-	printf "."
+	printf "+"
   fi
 done
 
 echo "File list processing complete."
 if [[ "${EXIT_STATUS}" -ne 0 ]]; then
-  echo "${COUNT} errors detected, exit status ${EXIT_STATUS}."
+  echo "${COUNT} errors detected, check ${DESTINATION}/errors.log"
+  echo "exit status ${EXIT_STATUS}."
 exit "${EXIT_STATUS}"
