@@ -109,7 +109,9 @@ if [[ ! -e "${SOURCE_FILE}" ]]; then
   echo "URL file ${SOURCE_FILE} does not exist" >&2
   exit 1
 else
+  URL_COUNT=$(wc -l "${SOURCE_FILE}" | awk '{print $1}')
   echo_out "URL file ${SOURCE_FILE} found."
+  echo_out "${URL_COUNT} lines in ${SOURCE_FILE}."
 fi
 
 # Confidence message when not using verbose
