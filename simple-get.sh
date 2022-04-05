@@ -2,6 +2,7 @@
 # Collects web pages from a list of URLs
 # Runs as the current user
 # (c) 2022 Richard Dawson
+# v1.0.0
 
 # Global Variables
 let COUNT=0
